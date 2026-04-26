@@ -3,8 +3,5 @@
   functions = "netlify/functions"
 
 [functions]
-  node_bundler = "esbuild"
-  external_node_modules = ["chrome-aws-lambda", "puppeteer-core"]
-
-[functions.verificar]
-  included_files = ["node_modules/chrome-aws-lambda/bin/**"]
+  node_bundle = true
+  external_node_modules = ["@sparticuz/chromium"]
