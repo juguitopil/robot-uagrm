@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install chromium",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,7 +11,9 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "chrome-aws-lambda": "^10.1.0",
     "playwright-aws-lambda": "^0.11.0",
-    "playwright-core": "^1.59.1"
+    "playwright-core": "^1.59.1",
+    "puppeteer-core": "^10.4.0"
   }
 }
