@@ -1,6 +1,7 @@
 [build]
-  command = "npm run build"
+  command = "npm install"
   functions = "netlify/functions"
 
 [functions]
   node_bundle = true
+  external_node_modules = ["chrome-aws-lambda"]

@@ -1,7 +1,7 @@
 const chromium = require('chrome-aws-lambda');
 
 exports.handler = async (event) => {
-    if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Use POST' };
+    if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'POST only' };
 
     let browser = null;
     try {
@@ -11,7 +11,7 @@ exports.handler = async (event) => {
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath,
-            headless: true,
+            headless: chromium.headless,
         });
 
         const page = await browser.newPage();
@@ -32,16 +32,10 @@ exports.handler = async (event) => {
         const esValido = !urlFinal.includes('default.php');
 
         await browser.close();
-        return { 
-            statusCode: 200, 
-            body: JSON.stringify({ valid: esValido, url: urlFinal }) 
-        };
+        return { statusCode: 200, body: JSON.stringify({ valid: esValido, url: urlFinal }) };
 
     } catch (error) {
         if (browser !== null) await browser.close();
-        return { 
-            statusCode: 500, 
-            body: JSON.stringify({ error: error.message }) 
-        };
+        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
     }
 };
