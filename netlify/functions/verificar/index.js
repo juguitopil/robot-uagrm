@@ -1,4 +1,4 @@
-const { chromium } = require('playwright-core');
+const chromium = require('playwright-aws-lambda');
 
 exports.handler = async (event, context) => {
     if (event.httpMethod !== 'POST') {
@@ -10,13 +10,15 @@ exports.handler = async (event, context) => {
         const { username, password } = JSON.parse(event.body);
         const loginUrl = 'https://perfil.uagrm.edu.bo/estudiantes/default.php';
 
-        browser = await chromium.launch({
-            headless: true, // CAMBIADO A TRUE: Ya no verás ventanas abiertas
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        // CONFIGURACIÓN PARA NUBE:
+        browser = await chromium.puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath,
+            headless: true, // DEBE SER TRUE EN LA NUBE
         });
 
-        const browserContext = await browser.newContext({ ignoreHTTPSErrors: true });
-        const page = await browserContext.newPage();
+        const page = await browser.newPage();
         
         await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
