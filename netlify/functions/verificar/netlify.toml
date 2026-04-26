@@ -1,9 +1,6 @@
 [build]
-  command = "npm install"
+  command = "npm run build"
   functions = "netlify/functions"
-
-[[plugins]]
-  package = "netlify-plugin-playwright"
 
 [functions]
   node_bundle = true

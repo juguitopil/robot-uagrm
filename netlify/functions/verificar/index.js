@@ -1,25 +1,18 @@
 const { chromium } = require('playwright-core');
 
 exports.handler = async (event) => {
-    if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: 'Método no permitido' };
-    }
+    if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Use POST' };
 
     let browser;
     try {
         const { username, password } = JSON.parse(event.body);
         
-        // El plugin de Netlify se encarga de encontrar el ejecutable automáticamente
+        // Launch usando el ejecutable que descargamos en el build
         browser = await chromium.launch({ headless: true });
         
-        const context = await browser.newContext();
-        const page = await context.newPage();
-        
-        await page.goto('https://perfil.uagrm.edu.bo/estudiantes/default.php', { 
-            waitUntil: 'domcontentloaded' 
-        });
+        const page = await browser.newPage();
+        await page.goto('https://perfil.uagrm.edu.bo/estudiantes/default.php', { waitUntil: 'networkidle' });
 
-        // Lógica de llenado por posición que ya te funcionó localmente
         const inputs = await page.$$('input[type="text"], input[type="password"]');
         if (inputs.length >= 2) {
             await inputs[0].fill(username);
@@ -33,17 +26,10 @@ exports.handler = async (event) => {
         const esValido = !urlFinal.includes('default.php');
 
         await browser.close();
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ valid: esValido, url: urlFinal }),
-        };
+        return { statusCode: 200, body: JSON.stringify({ valid: esValido, url: urlFinal }) };
 
     } catch (error) {
         if (browser) await browser.close();
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: 'Error en la nube', detalle: error.message }),
-        };
+        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
     }
 };
