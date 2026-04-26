@@ -1,4 +1,5 @@
 const { chromium } = require('playwright-core');
+const path = require('path');
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Use POST' };
@@ -7,11 +8,16 @@ exports.handler = async (event) => {
     try {
         const { username, password } = JSON.parse(event.body);
         
-        // Launch usando el ejecutable que descargamos en el build
-        browser = await chromium.launch({ headless: true });
+        // Buscamos el ejecutable en la carpeta local que forzamos arriba
+        browser = await chromium.launch({ 
+            headless: true,
+            // Esta ruta es donde Playwright guarda las cosas cuando PATH es 0
+            executablePath: path.join(process.cwd(), '.cache', 'ms-playwright', 'chromium-1127', 'chrome-linux', 'chrome'),
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
         
         const page = await browser.newPage();
-        await page.goto('https://perfil.uagrm.edu.bo/estudiantes/default.php', { waitUntil: 'networkidle' });
+        await page.goto('https://perfil.uagrm.edu.bo/estudiantes/default.php', { waitUntil: 'domcontentloaded' });
 
         const inputs = await page.$$('input[type="text"], input[type="password"]');
         if (inputs.length >= 2) {
@@ -30,6 +36,7 @@ exports.handler = async (event) => {
 
     } catch (error) {
         if (browser) await browser.close();
-        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+        // Si vuelve a fallar, este error nos dirá exactamente qué ruta intentó usar
+        return { statusCode: 500, body: JSON.stringify({ error: error.message, path: process.cwd() }) };
     }
 };
