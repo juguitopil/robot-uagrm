@@ -7,4 +7,3 @@
 
 [functions]
   node_bundle = true
-  external_node_modules = ["playwright-core"]
