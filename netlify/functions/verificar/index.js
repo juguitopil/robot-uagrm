@@ -27,14 +27,16 @@ exports.handler = async (event) => {
             await page.click('#btn-login');
         }
 
-        await page.waitForTimeout(5000); 
+        await page.waitForNavigation();
         const urlFinal = page.url();
         const esValido = !urlFinal.includes('default.php');
 
-        await browser.close();
-        return { statusCode: 200, body: JSON.stringify({ valid: esValido, url: urlFinal }) };
-
-    } catch (error) {
+        return {
+        statusCode: 200,
+        body: JSON.stringify({ valid: esValido }) // Aquí obtendrás el true/false
+    };
+    }
+        catch (error) {
         if (browser) await browser.close();
         return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
     }
