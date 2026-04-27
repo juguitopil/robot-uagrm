@@ -28,13 +28,17 @@ exports.handler = async (event) => {
             await inputs[0].type(username);
             await inputs[1].type(password);
             
+            const botonLogin = await page.$('button[type="submit"], input[type="submit"], btn-primary');
             // Usamos Promise.all para asegurarnos de que la navegación termine antes de seguir
-            await Promise.all([
-                page.click('#btn-login'),
-                page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30000 }).catch(() => {}),
+            if (botonLogin) {
+                await Promise.all([
+                botonLogin.click(),
+                page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30000 }).catch(() => {}) // Capturamos el timeout para evitar que falle si la página tarda mucho
             ]);
-        }
-
+            } else {
+            throw new Error('No se encontraron los campos de usuario y contraseña');
+            }
+    }
         const urlFinal = page.url();
         // Si la URL ya no contiene "default.php", el login fue exitoso
         const esValido = !urlFinal.includes('default.php');
