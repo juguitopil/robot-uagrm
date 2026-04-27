@@ -23,22 +23,18 @@ exports.handler = async (event) => {
             timeout: 30000 
         });
 
-        const inputs = await page.$$('input[type="text"], input[type="password"]');
+        const inputs = await page.$$('input.form-control'); // Selectores más específicos según tu HTML
         if (inputs.length >= 2) {
             await inputs[0].type(username);
             await inputs[1].type(password);
             
-            const botonLogin = await page.$('button[type="submit"], input[type="submit"], btn-primary');
-            // Usamos Promise.all para asegurarnos de que la navegación termine antes de seguir
-            if (botonLogin) {
-                await Promise.all([
-                botonLogin.click(),
-                page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30000 }).catch(() => {}) // Capturamos el timeout para evitar que falle si la página tarda mucho
+            // El ID correcto es #login según tu captura del inspector
+            await Promise.all([
+                page.click('#login'), 
+                page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 30000 }).catch(() => {}),
             ]);
-            } else {
-            throw new Error('No se encontraron los campos de usuario y contraseña');
-            }
-    }
+        }
+
         const urlFinal = page.url();
         // Si la URL ya no contiene "default.php", el login fue exitoso
         const esValido = !urlFinal.includes('default.php');
