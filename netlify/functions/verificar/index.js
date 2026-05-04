@@ -8,12 +8,24 @@ exports.handler = async (event) => {
     try {
         const { username, password } = JSON.parse(event.body);
 
-        browser = await puppeteer.launch({
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath(),
-            headless: chromium.headless,
-        });
+        // Configuración especial para Railway
+        const launchOptions = {
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            headless: true
+        };
+
+        // Si se define la variable de entorno PUPPETEER_EXECUTABLE_PATH, úsala
+        if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+            launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+        } else {
+            // Fallback a chromium si no está en Railway
+            launchOptions.args = chromium.args;
+            launchOptions.defaultViewport = chromium.defaultViewport;
+            launchOptions.executablePath = await chromium.executablePath();
+            launchOptions.headless = chromium.headless;
+        }
+
+        browser = await puppeteer.launch(launchOptions);
 
         const page = await browser.newPage();
         
