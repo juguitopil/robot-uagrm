@@ -12,6 +12,8 @@
   "type": "commonjs",
   "dependencies": {
     "@sparticuz/chromium": "^147.0.2",
+    "body-parser": "^2.2.2",
+    "express": "^5.2.1",
     "puppeteer-core": "^10.1.0"
   }
 }
