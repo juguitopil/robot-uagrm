@@ -8,24 +8,16 @@ exports.handler = async (event) => {
     try {
         const { username, password } = JSON.parse(event.body);
 
-        // Configuración especial para Railway
-        const launchOptions = {
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            headless: true
-        };
-
-        // Si se define la variable de entorno PUPPETEER_EXECUTABLE_PATH, úsala
-        if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-            launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
-        } else {
-            // Fallback a chromium si no está en Railway
-            launchOptions.args = chromium.args;
-            launchOptions.defaultViewport = chromium.defaultViewport;
-            launchOptions.executablePath = await chromium.executablePath();
-            launchOptions.headless = chromium.headless;
-        }
-
-        browser = await puppeteer.launch(launchOptions);
+        // Configuración universal para Puppeteer en Railway
+        browser = await puppeteer.launch({
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage', // Vital para que no se quede sin memoria en la nube
+                '--single-process'
+            ]
+        });
 
         const page = await browser.newPage();
         
