@@ -2,8 +2,9 @@
 nixPkgs = ['nodejs', 'google-chrome', 'cacert']
 
 [phases.build]
-cmds = ['npm install']
+cmds = ['npm ci'] # 'npm ci' es más limpio para entornos de producción/build
 
 [variables]
 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 'true'
+# En Railway/Nixpacks, el ejecutable suele quedar en esta ruta:
 PUPPETEER_EXECUTABLE_PATH = '/usr/bin/google-chrome-stable'
