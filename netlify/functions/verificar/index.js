@@ -10,11 +10,12 @@ exports.handler = async (event) => {
 
         // Configuración universal para Puppeteer en Railway
         browser = await puppeteer.launch({
-            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
+            // CAMBIO AQUÍ: Forzamos la ruta del Chrome instalado por Nixpacks
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable',
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage', // Vital para que no se quede sin memoria en la nube
+                '--disable-dev-shm-usage',
                 '--single-process'
             ]
         });
